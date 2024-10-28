@@ -1,8 +1,8 @@
 const parameters = {
     username: "root",
     password: "1234",
-    database: "mi_db",
-    host: "mysql-container",
+    database: "mi_db_final",
+    host: "localhost",
     dialect: "mysql",
 };
 
