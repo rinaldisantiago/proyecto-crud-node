@@ -1,5 +1,6 @@
-const db = require("../models");
-const Usuario = db.usuario;
+const db = require('../models');
+const Usuario = db.Usuario;
+
 
 const register = async(req, res) => {
     const { nombre, mail, nickname, password } = req.body;
@@ -11,7 +12,7 @@ const register = async(req, res) => {
         res.status(201).send(usuario);
     } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
-            res.status(400).send({ message: "Mail y nickname ya existente" });
+            res.status(400).send({ message: "Mail o nickname ya existente" });
         } else {
             res.status(500).send({
                 message: error.message,
@@ -23,18 +24,18 @@ const register = async(req, res) => {
 
 const update = async(req, res) => {
     try {
-        const { id } = req.params;
+        const id = req.user.id;
         const { nombre, nickname, mail, password } = req.body;
         let avatarPath = null;
         if (req.file) {
-            avatarPath = `uploads/avatars/${req.file.filename}`;
+            avatarPath = `uploads/avatars/${req.file.filename}`
         }
-        console.log(avatarPath);
+        //console.log(avatarPath)
 
-        // Buscar usuario por ID
+        // Buscar el usuario por id
         const usuario = await Usuario.findByPk(id);
         if (!usuario) {
-            return res.status(404).send({error: "Usuario no encontrado"});
+            return res.status(404).send({ error: 'Usuario no encontrado' });
         }
 
         // Actualizar los campos
@@ -42,24 +43,56 @@ const update = async(req, res) => {
         usuario.nickname = nickname;
         usuario.mail = mail;
         if (avatarPath) {
-            usuario.avatar = avatarPath; // Guarda la ruta del avatar
+            usuario.avatar = avatarPath; // Guardar la ruta del avatar
         }
- 
+
         // Solo actualizar la contraseña si fue proporcionada
         if (password) {
             usuario.password = password;
         }
 
-        await usuario.save(); // Sequelize activara el hook 'beforeUpdate' si es necesario
+        await usuario.save(); // Sequelize activará el hook `beforeUpdate` si es necesario
 
         res.status(200).send(usuario);
-
-    } catch(error) {
-        res.status(400).send({ error: error.message });
+    } catch (error) {
+        res.status(500).send({ error: 'Error interno del servidor' });
     }
 };
 
+const list = async(req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        if (page < 1 || limit < 1) {
+            return res.status(400).send({
+                message: "Page and limit must be positive"
+            })
+        }
+
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await Usuario.findAndCountAll({
+            attributes: { exclude: ['password'] },
+            limit: limit,
+            offset: offset
+        });
+
+        res.status(200).send({
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            itemsPerPage: limit,
+            data: rows
+        })
+
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
 module.exports = {
     register,
-    update
+    update,
+    list
 };
