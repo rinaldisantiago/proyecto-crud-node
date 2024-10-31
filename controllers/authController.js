@@ -1,27 +1,31 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../models'); // Importar los modelos
-const Persona = db.persona; // Acceder al modelo Persona
+const Usuario = db.Usuario; // Acceder al modelo Usuario
+
 
 const login = async(req, res) => {
     const { mail, password } = req.body;    
 
     try {
-        //1 - Constatar que existe una cuenta con ese mail
-        const persona = await Persona.findOne({ where: { mail } });
-        if (!persona) {
-            return res.status(404).send({ message: "Persona no encontrada" });
+        const { mail, password } = req.body;
+        // Se verifica si el mail existe en la base de datos
+        const usuario = await Usuario.findOne({
+            where: mail
+        });
+        if (!usuario){
+            res.status(404).send({ message: "Mail no existente" });
         }
-        //2 - Verificar password
-        const isMatch = await bcrypt.compare(password, persona.password);
-        if (!isMatch) {
-            return res.status(400).send({ message: "Password incorrecto" });
+        // Se verifica el password
+        const isMatch = await bcrypt.compare(password, Usuario.password);
+        if (!isMatch){
+            res.status(400).send({ message: "Password incorrecto" });
         }
         //3 - Crear token
         const token = jwt.sign({
-            id: persona.id,
-            nombre: persona.nombre,
-            mail: persona.mail
+            id: usuario.id,
+            nombre: usuario.nombre,
+            mail: usuario.mail
         }, "1234", { expiresIn: 180 });
         res.status(200).send({ token });
     } catch (error) {
