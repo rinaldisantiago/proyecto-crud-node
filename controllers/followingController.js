@@ -48,50 +48,50 @@ const unfollow = async (req, res) => {
     }
 };
 
-const listFollowing = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-
-        if (page < 1 || limit < 1) {
-            return res.status(400).send({
-                message: "Page and limit must be positive"
-            })
-        }
-
-        const offset = (page - 1) * limit;
-
-        const { count, rows } = await Following.findAndCountAll({
-            attributes: { exclude: ['id_usuario'] },
-            limit: limit,
-            offset: offset
-        });
-
-        res.status(200).send({
-            totalItems: count,
-            totalPages: Math.ceil(count / limit),
-            currentPage: page,
-            itemsPerPage: limit,
-            data: rows
-        })
-
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-}
-
-const listFollowers = async (req, res) => {
+// Obtener la lista de usuarios que el usuario sigue
+const getFollowing = async(req, res) => {
     const id_usuario = req.user.id;
+    try {
+        const usuario = await db.Usuario.findByPk(id_usuario, {
+            include: [{
+                model: db.Usuario,
+                as: 'seguidos', // Usa la relación "seguidos"
+                attributes: ['id', 'nombre', 'nickname'],
+                through: { 
+                    attributes:  [] 
+                }
+            }, ],
+        });
+        if (!usuario) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+        res.status(200).send(usuario.seguidos); // Enviar solo los usuarios seguidos
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+};
+
+// Obtener la lista de las personas que siguen al usuario
+const getFollowers = async(req, res) => {
+    const id_usuario_seguido = req.user.id;
 
     try {
-        const followers = await Following.findAll({
-            where: { id_usuario_seguido: id_usuario },
-            include: [{ model: db.Usuarios, as: 'usuario_seguidor', attributes: ['nickname', 'nombre'] }]
+        const usuario = await db.Usuario.findByPk(id_usuario_seguido, {
+            include: [{
+                model: db.Usuario,
+                as: 'seguidores', // Usa la relación "seguidores"
+                attributes: ['id', 'nombre', 'nickname'],
+                through: { 
+                    attributes:  [] 
+                }
+            }, ],
         });
-
-        res.status(200).send(followers);
+        if (!usuario) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+        res.status(200).send(usuario.seguidores); // Enviar solo los usuarios seguidores
     } catch (error) {
-        res.status(500).send({ error: error.message, tipo: error.name });
+        res.status(500).send({ error: error.message });
     }
 };
 
@@ -120,7 +120,7 @@ const listMutualFollowing = async (req, res) => {
 module.exports = {
     follow,  
     unfollow,
-    listFollowing,
-    listFollowers, 
+    getFollowing,
+    getFollowers, 
     listMutualFollowing
 };
