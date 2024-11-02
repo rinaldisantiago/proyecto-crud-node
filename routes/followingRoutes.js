@@ -5,7 +5,7 @@ const auth = require("../middlewares/authmiddleware");
 
 /**
  * @swagger
- * /followings/follow/:
+ * /followings/:
  *   post:
  *     tags: [Follows]
  *     summary: Follow a new user
@@ -41,32 +41,21 @@ const auth = require("../middlewares/authmiddleware");
  *       500:
  *         description: Internal server error
  */
-router.post("/follow", auth, followingController.follow);
+router.post("/", auth, followingController.follow);
 
 
 //!PREGUNTAR
 router.delete("/unfollow", auth, followingController.unfollow);
 
+
 /**
  * @swagger
- * /followings/following:
+ * /followings/following/:
  *   get:
+ *     tags: [Follows]
  *     summary: List all followings
- *     parameters:
- *       - name: page
- *         in: query
- *         required: false
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Page number for pagination
- *       - name: limit
- *         in: query
- *         required: false
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Number of users per page
+ *     security:
+ *       - ApiTokenAuth: []
  *     responses:
  *       200:
  *         description: A paginated list of users
@@ -89,15 +78,54 @@ router.delete("/unfollow", auth, followingController.unfollow);
  *                     type: object
  *                     properties:
  *                       id_usuario_seguido:
- *                         type: intenger
- *       400:
- *         description: Bad request - page or limit must be positive
+ *                         type: integer
+ *       404:
+ *         description: Users not found
  *       500:
  *         description: Internal server error
  */
-router.get("/following", auth, followingController.listFollowing);
-router.get("/following", auth, followingController.listFollowing);
+router.get("/following", auth, followingController.getFollowing);
 
-router.get("/followers", auth, followingController.listFollowers);
+
+/**
+ * @swagger
+ * /followings/followers/:
+ *   get:
+ *     tags: [Follows]
+ *     summary: List all followers
+ *     security:
+ *       - ApiTokenAuth: []
+ *     responses:
+ *       200:
+ *         description: A paginated list of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalItems:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 itemsPerPage:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_usuario_seguido:
+ *                         type: integer
+ *       404:
+ *         description: Users not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/followers", auth, followingController.getFollowers);
+
+
+
 router.get("/mutual", auth, followingController.listMutualFollowing);
 module.exports = router;
