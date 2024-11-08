@@ -9,6 +9,7 @@ const authRouter = require("./routes/authRoutes");
 const usuarioRouter = require("./routes/usuarioRoutes");
 const followingRouter = require("./routes/followingRoutes");
 
+require('dotenv').config();
 
 const app = express();
 
