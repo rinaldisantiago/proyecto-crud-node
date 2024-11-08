@@ -44,7 +44,59 @@ const auth = require("../middlewares/authmiddleware");
 router.post("/", auth, followingController.follow);
 
 
-//!PREGUNTAR
+/**
+ * @swagger
+ * /followings/unfollow:
+ *   delete:
+ *     tags:
+ *       - Follows
+ *     summary: Delete following
+ *     security:
+ *       - ApiTokenAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *          application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_usuario_seguido:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Has dejado de seguir al usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Has dejado de seguir al usuario
+ *       404:
+ *         description: No se encontró la relación de seguimiento
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: No se encontró la relación de seguimiento
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error message
+ *                 tipo:
+ *                   type: string
+ *                   example: SequelizeDatabaseError
+ */
 router.delete("/unfollow", auth, followingController.unfollow);
 
 
