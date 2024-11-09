@@ -11,7 +11,8 @@ const follow = async (req, res) => {
 
     try {
         await Following.create({ id_usuario, id_usuario_seguido });
-        res.status(201).send({ message: "Has comenzado a seguir al usuario" });
+        const usuario_seguido = await db.Usuario.findByPk(id_usuario_seguido);
+        res.status(201).send({ message: "Has comenzado a seguir a " + usuario_seguido.nickname });
     } catch (error) {
         if(error.name === "SequelizeUniqueConstraintError"){
             res.status(401).send({message: "Ya sigues a este usuario"});
@@ -95,22 +96,29 @@ const getFollowers = async(req, res) => {
     }
 };
 
-const listMutualFollowing = async (req, res) => {
+const getMutualFollows = async (req, res) => {
     const id_usuario = req.user.id;
-
     try {
-        const mutuals = await db.sequelize.query(`
-            SELECT u.id, u.nombre
-            FROM Usuarios u
-            INNER JOIN Followings f1 ON u.id = f1.id_usuario_seguido
-            INNER JOIN Followings f2 ON u.id = f2.id_usuario
-            WHERE f1.id_usuario = :id_usuario AND f2.id_usuario_seguido = :id_usuario
-        `, {
-            replacements: { id_usuario: id_usuario },
-            type: db.Sequelize.QueryTypes.SELECT
+        const usuario = await db.Usuario.findByPk(id_usuario, {
+            include: [{
+                model: db.Usuario,
+                as: 'seguidos', // Usa la relación "seguidos"
+                attributes: ['id', 'nombre', 'nickname'],
+                through: { 
+                    attributes:  [] 
+                }
+            },
+            {   model: db.Usuario,
+                as: 'seguidores', // Usa la relación "seguidores"
+                attributes: ['id', 'nombre', 'nickname'],
+                through: { 
+                    attributes:  [] 
+                }
+            }
+            ]
         });
 
-        res.status(200).send(mutuals);
+        res.status(200).send(usuario);
     } catch (error) {
         res.status(500).send({ error: error.message, tipo: error.name });
     }
@@ -122,5 +130,5 @@ module.exports = {
     unfollow,
     getFollowing,
     getFollowers, 
-    listMutualFollowing
+    getMutualFollows
 };
