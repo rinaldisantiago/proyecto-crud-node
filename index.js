@@ -8,6 +8,7 @@ const path = require("path");
 const authRouter = require("./routes/authRoutes");
 const usuarioRouter = require("./routes/usuarioRoutes");
 const followingRouter = require("./routes/followingRoutes");
+const postRouter = require("./routes/postRoutes");
 
 require('dotenv').config();
 
@@ -21,6 +22,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/api/auth", authRouter);
 app.use("/api/usuarios", usuarioRouter);
 app.use("/api/followings", followingRouter);
+app.use("/api/post", postRouter);
+
 
 app.listen(PORT, () => {
     console.log(`Aplicacion corriendo en puerto ${PORT}`);
