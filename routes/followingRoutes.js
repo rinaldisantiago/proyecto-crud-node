@@ -206,4 +206,5 @@ router.get("/followers", auth, followingController.getFollowers);
  *         description: Internal server error
  */
 router.get("/mutual", auth, followingController.getMutualFollows);
+
 module.exports = router;
