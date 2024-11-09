@@ -18,8 +18,6 @@ const auth = require("../middlewares/authmiddleware");
  *           schema:
  *             type: object
  *             properties:
- *               id_usuario:
- *                 type: integer
  *               id_usuario_seguido:
  *                 type: integer
  *     responses:
@@ -178,6 +176,34 @@ router.get("/following", auth, followingController.getFollowing);
 router.get("/followers", auth, followingController.getFollowers);
 
 
-
-router.get("/mutual", auth, followingController.listMutualFollowing);
+/**
+ * @swagger
+ * /followings/mutual:
+ *   get:
+ *     tags: [Follows]
+ *     summary: List mutual followers
+ *     security:
+ *       - ApiTokenAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users who mutually follow each other
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   nombre:
+ *                     type: string
+ *                   nickname:
+ *                     type: string
+ *       404:
+ *         description: No se encontraron Usuarios
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/mutual", auth, followingController.getMutualFollows);
 module.exports = router;
