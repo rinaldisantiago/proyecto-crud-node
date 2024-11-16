@@ -1,6 +1,6 @@
-# CRUD Node ITSC
+# Proyecto Final Practica Profesionalizante I
 
-Este proyecto tiene como objetivo desarrollar una API REST para un sistema CRUD (Create - Read - Update - Delete). La API se irá construyendo gradualmente.
+Este proyecto tiene como objetivo desarrollar una API REST para un sistema CRUD (Create - Read - Update - Delete).
 
 ## Instrucciones de Instalación
 
@@ -10,13 +10,13 @@ Este proyecto tiene como objetivo desarrollar una API REST para un sistema CRUD 
 ## Clonar el Repositorio
 
 ```bash
-git clone https://github.com/luirro777/crud-node-itsc
+git clone https://github.com/rinaldisantiago/proyecto-crud-node
 ```
 
 ## Instalación de Dependencias
 
 ```bash
-cd crud-node-itsc
+cd proyecto-crud-node
 npm install
 ```
 
@@ -24,11 +24,3 @@ npm install
 
 1. Abre el archivo `config/config.js`.
 2. Ajusta los parámetros de configuración según tus necesidades (por ejemplo, la conexión a la base de datos).
-
-## Pruebas en el Navegador
-
-A partir del 15 de agosto de 2024, están disponibles las siguientes URLs:
-
-- **Ruta principal**: [http://localhost:3000/api/personas](http://localhost:3000/api/personas)
-- **Listado de registros**: [http://localhost:3000/api/personas/list](http://localhost:3000/api/personas/list)
-
