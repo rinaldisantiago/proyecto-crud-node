@@ -99,6 +99,7 @@ const getFollowers = async(req, res) => {
 const getMutualFollows = async (req, res) => {
     const id_usuario = req.user.id;
     try {
+        // Obtener la lista de usuarios que el usuario sigue
         const usuario = await db.Usuario.findByPk(id_usuario, {
             include: [{
                 model: db.Usuario,
@@ -118,7 +119,26 @@ const getMutualFollows = async (req, res) => {
             ]
         });
 
-        res.status(200).send(usuario);
+        if (!usuario) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+
+        // Obtener los IDs de los usuarios seguidos y seguidores
+        const seguidosIds = usuario.seguidos.map(user => user.id);
+        const seguidoresIds = usuario.seguidores.map(user => user.id);
+
+        // Encontrar los IDs que están en ambas listas (seguimientos mutuos)
+        const mutualFollowsIds = seguidosIds.filter(id => seguidoresIds.includes(id));
+
+        // Obtener los detalles de los usuarios que se siguen mutuamente
+        const mutualFollows = await db.Usuario.findAll({
+            where: {
+                id: mutualFollowsIds
+            },
+            attributes: ['id', 'nombre', 'nickname']
+        });
+
+        res.status(200).send(mutualFollows);
     } catch (error) {
         res.status(500).send({ error: error.message, tipo: error.name });
     }
