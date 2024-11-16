@@ -181,12 +181,12 @@ router.get("/followers", auth, followingController.getFollowers);
  * /followings/mutual:
  *   get:
  *     tags: [Follows]
- *     summary: List mutual followers
+ *     summary: Obtener lista de usuarios que se siguen mutuamente
  *     security:
  *       - ApiTokenAuth: []
  *     responses:
  *       200:
- *         description: A list of users who mutually follow each other
+ *         description: Lista de usuarios que se siguen mutuamente obtenida correctamente
  *         content:
  *           application/json:
  *             schema:
@@ -201,9 +201,28 @@ router.get("/followers", auth, followingController.getFollowers);
  *                   nickname:
  *                     type: string
  *       404:
- *         description: No se encontraron Usuarios
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Usuario no encontrado
  *       500:
- *         description: Internal server error
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error interno del servidor
+ *                 tipo:
+ *                   type: string
+ *                   example: Error message
  */
 router.get("/mutual", auth, followingController.getMutualFollows);
 
