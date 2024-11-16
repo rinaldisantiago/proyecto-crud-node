@@ -100,7 +100,7 @@ const login = async(req, res) => {
         //1 - Constatar que existe una cuenta con ese mail
         const usuario = await Usuario.findOne({ where: { mail } });
         if (!usuario) {
-            return res.status(404).send({ message: "Usuario no encontrada" });
+            return res.status(404).send({ message: "Usuario no encontrado" });
         }
         //2 - Verificar password
         const isMatch = await bcrypt.compare(password, usuario.password);
