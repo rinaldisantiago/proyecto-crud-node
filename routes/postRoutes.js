@@ -67,7 +67,7 @@ const auth = require("../middlewares/authmiddleware");
  *                   type: string
  *                   example: SequelizeDatabaseError
  */
-router.post("/", postController.createPost);
+router.post("/", auth, postController.createPost);
 
 
 /**
@@ -118,7 +118,7 @@ router.post("/", postController.createPost);
  *                   type: string
  *                   example: Error interno del servidor
  */
-router.get("/", postController.getPostList);
+router.get("/", auth, postController.getPostList);
 
 
 /**
@@ -174,18 +174,25 @@ router.get("/", postController.getPostList);
  *                   type: string
  *                   example: SequelizeDatabaseError
  */
-router.delete("/deletePost", postController.deletePost);
+router.delete("/deletePost", auth, postController.deletePost);
 
 
 /**
  * @swagger
- * /posts/update:
+ * /post/updatePost:
  *   put:
  *     tags:
  *       - Posts
  *     summary: Actualizar post
  *     security:
  *       - ApiTokenAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID del post a actualizar
  *     requestBody:
  *       required: true
  *       content:
@@ -193,8 +200,6 @@ router.delete("/deletePost", postController.deletePost);
  *           schema:
  *             type: object
  *             properties:
- *               id:
- *                 type: integer
  *               titulo:
  *                 type: string
  *               contenido:
@@ -209,8 +214,6 @@ router.delete("/deletePost", postController.deletePost);
  *               properties:
  *                 id:
  *                   type: integer
- *                 id_usuario:
- *                   type: integer
  *                 titulo:
  *                   type: string
  *                 contenido:
@@ -219,16 +222,6 @@ router.delete("/deletePost", postController.deletePost);
  *                   type: string
  *                 updatedAt:
  *                   type: string
- *       400:
- *         description: Datos inválidos o incompletos
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Error message
  *       404:
  *         description: Post no encontrado
  *         content:
@@ -239,8 +232,8 @@ router.delete("/deletePost", postController.deletePost);
  *                 error:
  *                   type: string
  *                   example: Post no encontrado
- *       500:
- *         description: Error interno del servidor
+ *       400:
+ *         description: Error en la solicitud
  *         content:
  *           application/json:
  *             schema:
@@ -248,9 +241,9 @@ router.delete("/deletePost", postController.deletePost);
  *               properties:
  *                 error:
  *                   type: string
- *                   example: Error interno del servidor
+ *                   example: Descripción del error
  */
-router.put("/update", postController.updatePost);
+router.put("/updatePost", auth, postController.update);
 
 /**
  * @swagger
@@ -263,7 +256,7 @@ router.put("/update", postController.updatePost);
  *       - ApiTokenAuth: []
  *     parameters:
  *       - in: query
- *         name: id
+ *         name: id_post
  *         schema:
  *           type: integer
  *         required: true
@@ -322,7 +315,7 @@ router.put("/update", postController.updatePost);
  *                   type: string
  *                   example: Error message
  */
-router.get("/onePost", postController.getOnePost);
+router.get("/onePost", auth, postController.getOnePost);
 
 
 /**
@@ -387,5 +380,5 @@ router.get("/onePost", postController.getOnePost);
  *                   type: string
  *                   example: Error message
  */
-router.get("/userPost", postController.getUserPost);
+router.get("/userPost", auth, postController.getUserPost);
 module.exports = router;

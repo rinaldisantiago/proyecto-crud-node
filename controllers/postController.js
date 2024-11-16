@@ -1,10 +1,10 @@
 const db = require("../models");
-const Post= db.Post;
+const Post = db.Post;
 
 const createPost = async (req, res) => {
-    const id_usuario=6;
-    const {titulo, contenido} = req.body;
-    if (!id_usuario || !titulo || !contenido) {
+    const id_usuario = req.user.id;
+    const { titulo, contenido } = req.body;
+    if (!titulo || !contenido) {
         return res.status(400).send({ message: "Faltan datos de completar" });
     }
     try {
@@ -55,12 +55,12 @@ const deletePost = async (req, res) => {
     }
 };
 
-const updatePost = async(req, res) => {
+const update = async(req, res) => {
     try {
-        const id = req.body.id;
-        const { titulo, contenido} = req.body;
+        const idPost = req.query.id;
+        const { titulo, contenido } = req.body;
         
-        const post = await Post.findByPk(id);
+        const post = await Post.findByPk(idPost);
         if (!post) {
             return res.status(404).send({ error: 'Post no encontrado' });
         }
@@ -76,7 +76,7 @@ const updatePost = async(req, res) => {
 };
 
 const getOnePost = async(req, res) => {
-    const id_usuario_login = 1; //! Cambiar
+    const id_usuario_login = req.user.id;
     const postID = req.query.id;
 
     const siguiendo = await db.Usuario.findByPk(id_usuario_login, {
@@ -93,7 +93,7 @@ const getOnePost = async(req, res) => {
     try {
         const post = await Post.findByPk(postID);
         let encontrado = false;
-        for (let i = 0; i <= siguiendo.seguidos.length; i++){
+        for (let i = 0; i < siguiendo.seguidos.length; i++){
             if(post.id_usuario == siguiendo.seguidos[i].id){
                 encontrado = true;
             }
@@ -107,11 +107,11 @@ const getOnePost = async(req, res) => {
     } catch (error) {
         res.status(500).send({ message: "Error interno del server" });
     }
-}
+};
 
 
 const getUserPost = async(req, res) => {
-    const id_usuario_login = 1; //! Cambiar
+    const id_usuario_login = req.user.id;
     const id_usuario_seguido = req.query.id;
 
     const siguiendo = await db.Usuario.findByPk(id_usuario_login, {
@@ -132,7 +132,7 @@ const getUserPost = async(req, res) => {
         }});
 
         let encontrado= false;
-        for (let i = 0; i <= siguiendo.seguidos.length; i++){
+        for (let i = 0; i < siguiendo.seguidos.length; i++){
             if(id_usuario_seguido == siguiendo.seguidos[i].id){
                 encontrado = true;
             }
@@ -154,7 +154,7 @@ module.exports ={
     createPost,
     getPostList,
     deletePost,
-    updatePost,
+    update,
     getOnePost,
     getUserPost
 }
