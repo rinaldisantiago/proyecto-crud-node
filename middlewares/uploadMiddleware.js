@@ -1,7 +1,7 @@
-const multer = require("multer");
-const path = require("path");
+const multer = require("multer"); // Libreria que permite cargar archivos
+const path = require("path"); // Libreria que permite el manejo de rutas de archivos y directorios
 
-// Configuracio del almacenamiento con multer
+// Configuracion del almacenamiento con multer
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'uploads/avatars'); // Carpeta donde se guardan los archivos
