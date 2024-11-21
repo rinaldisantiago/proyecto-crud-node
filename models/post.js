@@ -19,7 +19,7 @@ const Post = (sequelize, Sequelize) => {
             allowNull: false,            
         },         
     }, {
-        timestamps: false,
+        timestamps: true,
     });
 };
 
