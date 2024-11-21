@@ -282,7 +282,7 @@ router.put("/updatePost", auth, postController.update);
  *                 updatedAt:
  *                   type: string
  *       403:
- *         description: No se puede mostrar este post
+ *         description: No se puede mostrar este post por no seguir al usuario
  *         content:
  *           application/json:
  *             schema:
@@ -290,7 +290,7 @@ router.put("/updatePost", auth, postController.update);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: No se puede mostrar este post
+ *                   example: No se puede mostrar este post por no seguir al usuario
  *       404:
  *         description: Post o usuario no encontrado
  *         content:
