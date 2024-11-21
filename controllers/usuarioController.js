@@ -32,7 +32,6 @@ const update = async(req, res) => {
         if (req.file) {
             avatarPath = `uploads/avatars/${req.file.filename}`
         }
-        //console.log(avatarPath)
 
         // Buscar el usuario por id
         const usuario = await Usuario.findByPk(id);
@@ -41,9 +40,18 @@ const update = async(req, res) => {
         }
 
         // Actualizar los campos
-        usuario.nombre = nombre;
-        usuario.nickname = nickname;
-        usuario.mail = mail;
+        if (nombre) {
+            usuario.nombre = nombre;
+        }
+
+        if (nickname) {
+            usuario.nickname = nickname;
+        }
+
+        if (mail) {
+            usuario.mail = mail;
+        }
+
         if (avatarPath) {
             usuario.avatar = avatarPath; // Guardar la ruta del avatar
         }
