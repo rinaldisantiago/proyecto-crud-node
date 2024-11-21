@@ -90,20 +90,31 @@ const getOnePost = async(req, res) => {
         }, ],
     });
 
+    if (!siguiendo) {
+        return res.status(404).send({ message: "Usuario no encontrado" });
+    }
+
     try {
         const post = await Post.findByPk(postID);
+        
+        if (!post) {
+            return res.status(404).send({ message: "Post no encontrado" });
+        };
+        
         let encontrado = false;
+        
         for (let i = 0; i < siguiendo.seguidos.length; i++){
             if(post.id_usuario == siguiendo.seguidos[i].id){
                 encontrado = true;
             }
-        }
+        };
+        
         if (id_usuario_login == post.id_usuario||encontrado==true) {
             res.status(200).send(post);
-        
         } else {
-            res.status(404).send({ message: "No se puede mostrar este post" });
-        }
+            res.status(403).send({ message: "Este post no se puede mostrar porque no sigues al usuario" });
+        };
+
     } catch (error) {
         res.status(500).send({ message: "Error interno del server" });
     }
