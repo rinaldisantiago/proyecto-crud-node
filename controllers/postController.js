@@ -39,10 +39,14 @@ const getPostList = async(req, res) => {
 
 const deletePost = async (req, res) => {
     try {
+        const id_usuario = req.user.id;
         const postID = req.body.id;
 
         const post = await Post.destroy({
-            where: { id: postID}
+            where: { 
+                id_usuario: id_usuario,
+                id: postID, 
+            }
         });
 
         if (post) {
@@ -51,27 +55,47 @@ const deletePost = async (req, res) => {
             res.status(404).send({ message: "No se encontró el post. Verifica el ID proporcionado." });
         }
     } catch (error) {
-        res.status(500).send({ message: "Error interno del servidor", tipo: error.name, detalles: error.message });
+        res.status(500).send({ 
+            message: "Error interno del servidor", 
+            tipo: error.name, 
+            detalles: error.message });
     }
 };
 
-const update = async(req, res) => {
+const update = async (req, res) => {
     try {
-        const idPost = req.query.id;
+        const id_usuario = req.user.id;
+        const postID = req.query.id;
         const { titulo, contenido } = req.body;
-        
-        const post = await Post.findByPk(idPost);
+
+        // Encontrar el post por ID
+        const post = await Post.findOne({
+            where: { 
+                id: postID, 
+                id_usuario: id_usuario 
+            }
+        });
+
         if (!post) {
-            return res.status(404).send({ error: 'Post no encontrado' });
+            return res.status(404).send({ message: "No se encontró el post o no tienes permiso para editarlo." });
         }
 
-        post.titulo = titulo;
-        post.contenido = contenido;
-        await post.save(); 
-        
-        res.status(200).send(post);
+        // Actualizar los campos del post
+        if (titulo) {
+            post.titulo = titulo;
+        }
+        if (contenido) {
+            post.contenido = contenido;
+        }
+
+        await post.save();
+
+        res.status(200).send({ message: "¡Post actualizado correctamente!", post });
     } catch (error) {
-        res.status(400).send({ error: error.message });
+        res.status(500).send({ 
+            message: "Error interno del servidor", 
+            tipo: error.name, 
+            detalles: error.message });
     }
 };
 
